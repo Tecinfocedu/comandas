@@ -5,24 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comandas - Ricken Bebidas</title>
     <style>
-        /* Nova Paleta de Cores Baseada na Logo */
         :root { 
             --bg: #121212; 
             --card: #1e1e1e; 
             --card-hover: #2a2a2a;
-            --primary: #f5c71a; /* Amarelo/Dourado da Logo */
+            --primary: #f5c71a; 
             --primary-hover: #dfb213;
             --text: #f3f4f6; 
             --text-muted: #9ca3af;
             --border: #333333;
             --danger: #ef4444;
             --success: #10b981;
+            --info: #3b82f6;
         }
         
         body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
         .hidden { display: none !important; }
         
-        /* Inputs e Botões Globais */
         input { 
             width: 100%; padding: 0.8rem; margin-top: 0.5rem; 
             background: #2a2a2a; border: 1px solid var(--border); 
@@ -31,7 +30,7 @@
         input:focus { outline: 2px solid var(--primary); border-color: transparent; }
         
         button { 
-            background: var(--primary); color: #000; /* Texto preto para contrastar com o dourado */
+            background: var(--primary); color: #000; 
             border: none; cursor: pointer; font-weight: bold; 
             padding: 0.8rem; border-radius: 6px; transition: 0.2s;
         }
@@ -57,27 +56,40 @@
         .container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
         
         /* Grid de Comandas */
-        .comandas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .comandas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .comanda-card { 
-            background: var(--card); padding: 1.5rem; border-radius: 10px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-top: 4px solid var(--primary); 
-            display: flex; flex-direction: column; border: 1px solid var(--border); border-top: 4px solid var(--primary);
+            background: var(--card); padding: 1.2rem; border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); 
+            border-top: 4px solid var(--primary); display: flex; flex-direction: column;
         }
-        .item-list { font-size: 0.95rem; margin: 1rem 0; border-bottom: 1px solid var(--border); padding-bottom: 1rem; flex-grow: 1; max-height: 200px; overflow-y: auto; }
-        .item-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; background: var(--card-hover); padding: 0.5rem; border-radius: 6px; }
-        .item-qtd { font-weight: bold; color: var(--primary); margin-right: 8px; }
+        .item-list { font-size: 0.9rem; margin: 1rem 0; border-bottom: 1px solid var(--border); padding-bottom: 1rem; flex-grow: 1; max-height: 220px; overflow-y: auto; }
+        
+        /* Linha do Item com Ações Editáveis */
+        .item-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 0.5rem; background: var(--card-hover); padding: 0.4rem 0.6rem; border-radius: 6px; gap: 8px; 
+        }
+        .item-info { display: flex; align-items: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .item-qtd { font-weight: bold; color: var(--primary); margin-right: 6px; }
+        .item-actions { display: flex; gap: 4px; align-items: center; }
+        
+        /* Botões Mini de Edição */
+        .btn-mini { padding: 3px 7px; font-size: 0.75rem; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-qty { background: var(--border); color: var(--text); }
+        .btn-qty:hover { background: var(--primary); color: #000; }
+        .btn-edit { background: var(--info); color: white; }
+        .btn-del { background: var(--danger); color: white; }
         
         /* Histórico e Produtos */
         .history-item { 
             background: var(--card); padding: 1.2rem; margin-bottom: 1rem; border-radius: 8px; 
             display: flex; justify-content: space-between; align-items: center; 
-            border-left: 5px solid var(--primary); border-top: 1px solid var(--border);
-            border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+            border-left: 5px solid var(--primary); border: 1px solid var(--border); border-left-width: 5px;
         }
         .category-box { background: var(--card); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 8px; border: 1px solid var(--border); }
-        .category-title { border-bottom: 2px solid var(--primary); margin-bottom: 1rem; padding-bottom: 0.5rem; color: var(--primary); font-size: 1.3rem; margin-top: 0; }
+        .category-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); margin-bottom: 1rem; padding-bottom: 0.5rem; color: var(--primary); font-size: 1.3rem; margin-top: 0; }
         
-        /* Modal de Clique Rápido */
+        /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: var(--card); padding: 2rem; border-radius: 12px; width: 95%; max-width: 650px; max-height: 85vh; overflow-y: auto; position: relative; border: 1px solid var(--primary); }
         .close-btn { position: absolute; right: 1.5rem; top: 1.5rem; background: var(--card-hover); color: var(--text); border: 1px solid var(--border); border-radius: 50%; width: 35px; height: 35px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -95,7 +107,6 @@
         .produto-btn span.preco { font-size: 0.9rem; margin-top: 0.4rem; color: var(--text-muted); }
         .produto-btn:hover span.preco { color: #222; }
 
-        /* Custom Scrollbar para combinar com o dark mode */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -109,8 +120,8 @@
         <div class="login-box">
             <img src="logo.jpeg" alt="Ricken Bebidas Logo" style="max-width: 220px; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
             <h2 style="margin-top: 0; color: var(--primary); text-align: center;">Acesso ao Sistema</h2>
-            <input type="text" id="login-user" placeholder="Usuário">
-            <input type="password" id="login-pass" placeholder="Senha">
+            <input type="text" id="login-user" placeholder="Usuário (admin)">
+            <input type="password" id="login-pass" placeholder="Senha (123)">
             <button onclick="fazerLogin()" style="width: 100%; margin-top: 1.5rem; font-size: 1.1rem;">Entrar</button>
         </div>
     </div>
@@ -240,6 +251,10 @@
             localStorage.setItem('dist_catalogo', JSON.stringify(catalogo));
         }
 
+        function atualizarTotalComanda(comanda) {
+            comanda.total = comanda.itens.reduce((acc, item) => acc + (item.valor * (item.quantidade || 1)), 0);
+        }
+
         // --- LÓGICA DE COMANDAS ---
         function novaComanda() {
             const nome = document.getElementById('novo-cliente').value.trim();
@@ -254,20 +269,35 @@
             const grid = document.getElementById('grid-comandas');
             grid.innerHTML = '';
             comandas.forEach(c => {
-                let itensHTML = c.itens.map(i => {
+                let itensHTML = c.itens.map((i, idx) => {
                     const qtd = i.quantidade || 1;
                     const subtotal = i.valor * qtd;
-                    return `<div class="item-row">
-                                <span><span class="item-qtd">${qtd}x</span> ${i.nome}</span> 
-                                <span>R$ ${subtotal.toFixed(2)}</span>
-                            </div>`;
+                    return `
+                        <div class="item-row">
+                            <div class="item-info">
+                                <span class="item-qtd">${qtd}x</span> 
+                                <span title="${i.nome}">${i.nome}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:0.85rem; color:var(--text-muted);">R$ ${subtotal.toFixed(2)}</span>
+                                <div class="item-actions">
+                                    <button class="btn-mini btn-qty" onclick="alterarQtd(${c.id}, ${idx}, -1)" title="Diminuir">-</button>
+                                    <button class="btn-mini btn-qty" onclick="alterarQtd(${c.id}, ${idx}, 1)" title="Aumentar">+</button>
+                                    <button class="btn-mini btn-edit" onclick="editarItemComanda(${c.id}, ${idx})" title="Editar Item">✏️</button>
+                                    <button class="btn-mini btn-del" onclick="removerItemComanda(${c.id}, ${idx})" title="Excluir Item">🗑️</button>
+                                </div>
+                            </div>
+                        </div>`;
                 }).join('');
                 
                 grid.innerHTML += `
                     <div class="comanda-card">
-                        <h3 style="margin:0 0 1rem 0; color: var(--primary); font-size: 1.4rem;">${c.cliente}</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+                            <h3 style="margin:0; color: var(--primary); font-size: 1.3rem;">${c.cliente}</h3>
+                            <button class="btn-mini btn-edit" onclick="editarNomeCliente(${c.id})" title="Editar Nome do Cliente">✏️</button>
+                        </div>
                         <div class="item-list">${itensHTML || '<em style="color:var(--text-muted);">Nenhum item...</em>'}</div>
-                        <h3 style="margin: 0.5rem 0 1rem 0; font-size: 1.3rem;">Total: <span style="color:var(--primary);">R$ ${c.total.toFixed(2)}</span></h3>
+                        <h3 style="margin: 0.5rem 0 1rem 0; font-size: 1.2rem;">Total: <span style="color:var(--primary);">R$ ${c.total.toFixed(2)}</span></h3>
                         <div style="display:flex; gap:0.5rem; margin-top: auto;">
                             <button onclick="abrirModalProdutos(${c.id})" style="flex:1;">+ Adicionar</button>
                             <button onclick="finalizarComanda(${c.id})" style="background:var(--success); color:white; flex:1;">✔ Fechar</button>
@@ -275,6 +305,70 @@
                     </div>
                 `;
             });
+        }
+
+        // --- AÇÕES EDITÁVEIS NAS COMANDAS ---
+        function alterarQtd(comandaId, itemIndex, delta) {
+            const comanda = comandas.find(c => c.id === comandaId);
+            if (!comanda) return;
+            const item = comanda.itens[itemIndex];
+            
+            item.quantidade = (item.quantidade || 1) + delta;
+            
+            if (item.quantidade <= 0) {
+                comanda.itens.splice(itemIndex, 1);
+            }
+            
+            atualizarTotalComanda(comanda);
+            salvarTudo();
+            renderizarComandas();
+        }
+
+        function editarItemComanda(comandaId, itemIndex) {
+            const comanda = comandas.find(c => c.id === comandaId);
+            if (!comanda) return;
+            const item = comanda.itens[itemIndex];
+            
+            const novoNome = prompt("Nome do produto:", item.nome);
+            if (!novoNome) return;
+            
+            const novoValor = parseFloat(prompt("Valor unitário (R$):", item.valor).replace(',', '.'));
+            if (isNaN(novoValor) || novoValor < 0) return alert("Valor inválido!");
+            
+            const novaQtd = parseInt(prompt("Quantidade:", item.quantidade || 1));
+            if (isNaN(novaQtd) || novaQtd <= 0) return alert("Quantidade inválida!");
+
+            item.nome = novoNome.trim();
+            item.valor = novoValor;
+            item.quantidade = novaQtd;
+
+            atualizarTotalComanda(comanda);
+            salvarTudo();
+            renderizarComandas();
+        }
+
+        function removerItemComanda(comandaId, itemIndex) {
+            const comanda = comandas.find(c => c.id === comandaId);
+            if (!comanda) return;
+            
+            if (confirm("Deseja remover este item da comanda?")) {
+                comanda.itens.splice(itemIndex, 1);
+                atualizarTotalComanda(comanda);
+                salvarTudo();
+                renderizarComandas();
+            }
+        }
+
+        function editarNomeCliente(comandaId) {
+            const comanda = comandas.find(c => c.id === comandaId);
+            if (!comanda) return;
+            
+            const novoNome = prompt("Editar nome do cliente/mesa:", comanda.cliente);
+            if (novoNome && novoNome.trim() !== "") {
+                comanda.cliente = novoNome.trim();
+                salvarTudo();
+                renderizarComandas();
+            }
         }
 
         function finalizarComanda(id) {
@@ -324,11 +418,10 @@
                 comanda.itens.push({ nome: nome, valor: valor, quantidade: 1 });
             }
             
-            comanda.total += valor;
+            atualizarTotalComanda(comanda);
             salvarTudo();
             renderizarComandas();
             
-            // Notificação visual de sucesso
             let btnMsg = document.createElement("div");
             btnMsg.innerText = "+1 " + nome;
             btnMsg.style = "position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--primary); color:#000; padding:12px 24px; border-radius:30px; z-index:2000; font-weight:bold; box-shadow:0 4px 12px rgba(0,0,0,0.5);";
@@ -340,22 +433,34 @@
             const nomeItem = prompt('Nome do produto avulso:');
             if (!nomeItem) return;
             const valorItem = parseFloat(prompt('Valor do item (Use ponto. Ex: 15.50):').replace(',', '.'));
-            if (isNaN(valorItem)) return alert('Valor inválido!');
+            if (isNaN(valorItem) || valorItem < 0) return alert('Valor inválido!');
             
             adicionarItemRapido(nomeItem, valorItem);
             fecharModal();
         }
 
-        // --- LÓGICA DO ESTOQUE ---
+        // --- LÓGICA DO ESTOQUE (CATÁLOGO EDITÁVEL) ---
         function renderizarAbaProdutos() {
             const adminLista = document.getElementById('lista-categorias-admin');
             adminLista.innerHTML = '';
             
             catalogo.forEach((cat, indexCat) => {
-                let itensCat = cat.itens.map(i => `<div class="item-row"><span>${i.nome}</span> <strong style="color:var(--primary);">R$ ${i.valor.toFixed(2)}</strong></div>`).join('');
+                let itensCat = cat.itens.map((i, indexItem) => `
+                    <div class="item-row">
+                        <span>${i.nome} - <strong style="color:var(--primary);">R$ ${i.valor.toFixed(2)}</strong></span>
+                        <div class="item-actions">
+                            <button class="btn-mini btn-edit" onclick="editarProdutoEstoque(${indexCat}, ${indexItem})" title="Editar Produto">✏️</button>
+                            <button class="btn-mini btn-del" onclick="excluirProdutoEstoque(${indexCat}, ${indexItem})" title="Excluir Produto">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+
                 adminLista.innerHTML += `
                     <div class="category-box">
-                        <h3 class="category-title">${cat.nomeCat}</h3>
+                        <div class="category-title">
+                            <span>${cat.nomeCat}</span>
+                            <button class="btn-mini btn-del" onclick="excluirCategoria(${indexCat})" title="Excluir Categoria">🗑️ Excluir Categoria</button>
+                        </div>
                         ${itensCat || '<p style="color:var(--text-muted); font-size:0.9rem;">Categoria vazia.</p>'}
                         <button onclick="novoProdutoNaCategoria(${indexCat})" style="margin-top: 1rem; width: auto; font-size: 0.9rem; background:transparent; color:var(--text); border:1px solid var(--border);">
                             + Adicionar Produto
@@ -367,8 +472,8 @@
 
         function novaCategoria() {
             const nome = prompt("Nome da Nova Categoria (Ex: Combos, Porções):");
-            if (nome) {
-                catalogo.push({ nomeCat: nome, itens: [] });
+            if (nome && nome.trim() !== "") {
+                catalogo.push({ nomeCat: nome.trim(), itens: [] });
                 salvarTudo();
                 renderizarAbaProdutos();
             }
@@ -378,11 +483,40 @@
             const nome = prompt("Nome do Produto:");
             if (!nome) return;
             const valor = parseFloat(prompt("Valor numérico (Ex: 12.00):").replace(',', '.'));
-            if (isNaN(valor)) return alert("Valor inválido!");
+            if (isNaN(valor) || valor < 0) return alert("Valor inválido!");
             
-            catalogo[indexCat].itens.push({ nome: nome, valor: valor });
+            catalogo[indexCat].itens.push({ nome: nome.trim(), valor: valor });
             salvarTudo();
             renderizarAbaProdutos();
+        }
+
+        function editarProdutoEstoque(indexCat, indexItem) {
+            const item = catalogo[indexCat].itens[indexItem];
+            const novoNome = prompt("Nome do produto:", item.nome);
+            if (!novoNome) return;
+            const novoValor = parseFloat(prompt("Valor (R$):", item.valor).replace(',', '.'));
+            if (isNaN(novoValor) || novoValor < 0) return alert("Valor inválido!");
+
+            item.nome = novoNome.trim();
+            item.valor = novoValor;
+            salvarTudo();
+            renderizarAbaProdutos();
+        }
+
+        function excluirProdutoEstoque(indexCat, indexItem) {
+            if (confirm("Tem certeza que deseja remover este produto do catálogo?")) {
+                catalogo[indexCat].itens.splice(indexItem, 1);
+                salvarTudo();
+                renderizarAbaProdutos();
+            }
+        }
+
+        function excluirCategoria(indexCat) {
+            if (confirm("Tem certeza que deseja excluir esta categoria inteira e todos os produtos dela?")) {
+                catalogo.splice(indexCat, 1);
+                salvarTudo();
+                renderizarAbaProdutos();
+            }
         }
 
         // --- HISTÓRICO E CONFIGURAÇÕES ---
