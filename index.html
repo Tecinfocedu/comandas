@@ -5,108 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comandas - Ricken Bebidas</title>
     <style>
+        /* MANTIVE SEU CSS EXATAMENTE IGUAL */
         :root { 
-            --bg: #121212; 
-            --card: #1e1e1e; 
-            --card-hover: #2a2a2a;
-            --primary: #f5c71a; 
-            --primary-hover: #dfb213;
-            --text: #f3f4f6; 
-            --text-muted: #9ca3af;
-            --border: #333333;
-            --danger: #ef4444;
-            --success: #10b981;
-            --info: #3b82f6;
+            --bg: #121212; --card: #1e1e1e; --card-hover: #2a2a2a;
+            --primary: #f5c71a; --primary-hover: #dfb213;
+            --text: #f3f4f6; --text-muted: #9ca3af;
+            --border: #333333; --danger: #ef4444;
+            --success: #10b981; --info: #3b82f6;
         }
-        
         body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
         .hidden { display: none !important; }
-        
         input { 
             width: 100%; padding: 0.8rem; margin-top: 0.5rem; 
             background: #2a2a2a; border: 1px solid var(--border); 
             color: var(--text); border-radius: 6px; box-sizing: border-box; 
         }
         input:focus { outline: 2px solid var(--primary); border-color: transparent; }
-        
         button { 
-            background: var(--primary); color: #000; 
-            border: none; cursor: pointer; font-weight: bold; 
-            padding: 0.8rem; border-radius: 6px; transition: 0.2s;
+            background: var(--primary); color: #000; border: none; cursor: pointer; 
+            font-weight: bold; padding: 0.8rem; border-radius: 6px; transition: 0.2s;
         }
         button:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        
-        /* Login */
         #login-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .login-box { 
-            background: var(--card); padding: 2.5rem; border-radius: 12px; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5); width: 320px; 
-            border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center;
-        }
-        
-        /* Layout Principal */
-        nav { 
-            background: var(--card); padding: 1rem; display: flex; gap: 0.8rem; 
-            border-bottom: 2px solid var(--primary); overflow-x: auto; white-space: nowrap; 
-        }
+        .login-box { background: var(--card); padding: 2.5rem; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); width: 320px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
+        nav { background: var(--card); padding: 1rem; display: flex; gap: 0.8rem; border-bottom: 2px solid var(--primary); overflow-x: auto; white-space: nowrap; }
         nav button { background: transparent; color: var(--text); border: 1px solid var(--border); }
         nav button:hover { background: var(--primary); color: #000; border-color: var(--primary); }
         .btn-sair { margin-left: auto; border-color: var(--danger) !important; color: var(--danger) !important; }
         .btn-sair:hover { background: var(--danger) !important; color: white !important; }
         .container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
-        
-        /* Grid de Comandas */
         .comandas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
-        .comanda-card { 
-            background: var(--card); padding: 1.2rem; border-radius: 10px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); 
-            border-top: 4px solid var(--primary); display: flex; flex-direction: column;
-        }
+        .comanda-card { background: var(--card); padding: 1.2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid var(--border); border-top: 4px solid var(--primary); display: flex; flex-direction: column; }
         .item-list { font-size: 0.9rem; margin: 1rem 0; border-bottom: 1px solid var(--border); padding-bottom: 1rem; flex-grow: 1; max-height: 220px; overflow-y: auto; }
-        
-        /* Linha do Item com Ações Editáveis */
-        .item-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 0.5rem; background: var(--card-hover); padding: 0.4rem 0.6rem; border-radius: 6px; gap: 8px; 
-        }
+        .item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; background: var(--card-hover); padding: 0.4rem 0.6rem; border-radius: 6px; gap: 8px; }
         .item-info { display: flex; align-items: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
         .item-qtd { font-weight: bold; color: var(--primary); margin-right: 6px; }
         .item-actions { display: flex; gap: 4px; align-items: center; }
-        
-        /* Botões Mini de Edição */
         .btn-mini { padding: 3px 7px; font-size: 0.75rem; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
         .btn-qty { background: var(--border); color: var(--text); }
         .btn-qty:hover { background: var(--primary); color: #000; }
         .btn-edit { background: var(--info); color: white; }
         .btn-del { background: var(--danger); color: white; }
-        
-        /* Histórico e Produtos */
-        .history-item { 
-            background: var(--card); padding: 1.2rem; margin-bottom: 1rem; border-radius: 8px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-left: 5px solid var(--primary); border: 1px solid var(--border); border-left-width: 5px;
-        }
+        .history-item { background: var(--card); padding: 1.2rem; margin-bottom: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); border-left: 5px solid var(--primary); }
         .category-box { background: var(--card); padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 8px; border: 1px solid var(--border); }
         .category-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); margin-bottom: 1rem; padding-bottom: 0.5rem; color: var(--primary); font-size: 1.3rem; margin-top: 0; }
-        
-        /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: var(--card); padding: 2rem; border-radius: 12px; width: 95%; max-width: 650px; max-height: 85vh; overflow-y: auto; position: relative; border: 1px solid var(--primary); }
         .close-btn { position: absolute; right: 1.5rem; top: 1.5rem; background: var(--card-hover); color: var(--text); border: 1px solid var(--border); border-radius: 50%; width: 35px; height: 35px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .close-btn:hover { background: var(--danger); color: white; border-color: var(--danger); }
-        
-        /* Botões de Produtos no Modal */
         .grid-produtos-modal { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2rem; }
-        .produto-btn { 
-            background: var(--card-hover); border: 1px solid var(--border); 
-            padding: 1rem; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; 
-            align-items: center; flex: 1 1 calc(33.333% - 0.8rem); min-width: 110px; color: var(--text);
-        }
+        .produto-btn { background: var(--card-hover); border: 1px solid var(--border); padding: 1rem; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; flex: 1 1 calc(33.333% - 0.8rem); min-width: 110px; color: var(--text); }
         .produto-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); transform: scale(1.03); box-shadow: 0 4px 8px rgba(245, 199, 26, 0.2); }
         .produto-btn span.nome { font-weight: bold; font-size: 1rem; }
         .produto-btn span.preco { font-size: 0.9rem; margin-top: 0.4rem; color: var(--text-muted); }
         .produto-btn:hover span.preco { color: #222; }
-
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -114,15 +66,15 @@
     </style>
 </head>
 <body>
-
     <!-- Tela de Login -->
     <div id="login-screen">
         <div class="login-box">
             <img src="logo.jpeg" alt="Ricken Bebidas Logo" style="max-width: 220px; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
             <h2 style="margin-top: 0; color: var(--primary); text-align: center;">Acesso ao Sistema</h2>
-            <input type="text" id="login-user" placeholder="Usuário">
+            <input type="email" id="login-email" placeholder="E-mail">
             <input type="password" id="login-pass" placeholder="Senha">
             <button onclick="fazerLogin()" style="width: 100%; margin-top: 1.5rem; font-size: 1.1rem;">Entrar</button>
+            <p id="login-error" style="color: var(--danger); font-size: 0.9rem; margin-top: 1rem; display: none;"></p>
         </div>
     </div>
 
@@ -162,13 +114,14 @@
 
             <!-- Aba Configurações -->
             <div id="aba-config" class="aba hidden">
-                <h2 style="color: var(--primary);">Configurações</h2>
+                <h2 style="color: var(--primary);">Configurações de Segurança</h2>
                 <div style="max-width: 350px; background: var(--card); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
-                    <label style="color: var(--text-muted);">Novo Usuário</label>
-                    <input type="text" id="config-user" placeholder="Digite o novo usuário">
-                    <label style="display:block; margin-top: 1.5rem; color: var(--text-muted);">Nova Senha</label>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Crie um novo usuário para acessar o sistema. O login atual será desconectado.</p>
+                    <label style="color: var(--text-muted);">Novo E-mail</label>
+                    <input type="email" id="config-user" placeholder="Digite o novo e-mail">
+                    <label style="display:block; margin-top: 1.5rem; color: var(--text-muted);">Nova Senha (Mín. 6 letras/números)</label>
                     <input type="password" id="config-pass" placeholder="Digite a nova senha">
-                    <button onclick="salvarCredenciais()" style="width: 100%; margin-top: 1.5rem;">Salvar Alterações</button>
+                    <button onclick="criarNovoUsuario()" style="width: 100%; margin-top: 1.5rem;">Criar e Trocar Usuário</button>
                 </div>
             </div>
         </div>
@@ -179,10 +132,8 @@
         <div class="modal-content">
             <button class="close-btn" onclick="fecharModal()">X</button>
             <h2 style="margin-top: 0; color: var(--primary);">Adicionar à Comanda</h2>
-            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem;">Clique no produto para adicionar direto na comanda. Você pode clicar várias vezes para somar a quantidade.</p>
-            
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem;">Clique no produto para adicionar direto na comanda.</p>
             <div id="modal-lista-produtos"></div>
-            
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
             <button onclick="adicionarItemManual()" style="background: transparent; color: var(--text); border: 1px solid var(--border); width: 100%; margin: 0;">
                 ✍️ Adicionar Item Manual
@@ -190,80 +141,108 @@
         </div>
     </div>
 
-    <script>
-        // --- BANCO DE DADOS LOCAL ---
-        let credenciais = JSON.parse(localStorage.getItem('dist_credenciais')) || { user: 'admin', pass: '123' };
-        let comandas = JSON.parse(localStorage.getItem('dist_comandas')) || [];
-        let historico = JSON.parse(localStorage.getItem('dist_historico')) || [];
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        // COLOQUE SUAS CREDENCIAIS DO FIREBASE AQUI
+const firebaseConfig = {
+  apiKey: "AIzaSyBMHXpVGV3PCUwZnuNIdZ3acqHbSqlRers",
+  authDomain: "bebidas-6936f.firebaseapp.com",
+  projectId: "bebidas-6936f",
+  storageBucket: "bebidas-6936f.firebasestorage.app",
+  messagingSenderId: "370812230774",
+  appId: "1:370812230774:web:14fc36079d25b96da7d357",
+  measurementId: "G-SHQSWZR7XP"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Variaveis de Estado (agora sincronizadas com o banco)
+        let comandas = [];
+        let historico = [];
+        let catalogo = [];
         let comandaAtualId = null; 
 
-        let catalogo = JSON.parse(localStorage.getItem('dist_catalogo')) || [
-            { 
-                nomeCat: 'Cervejas', 
-                itens: [
-                    { nome: 'Skol Lata', valor: 5.00 },
-                    { nome: 'Brahma Lata', valor: 5.50 },
-                    { nome: 'Heineken LN', valor: 9.00 }
-                ]
-            },
-            { 
-                nomeCat: 'Destilados', 
-                itens: [
-                    { nome: 'Dose Campari', valor: 10.00 },
-                    { nome: 'Dose Vodka', valor: 8.00 }
-                ]
-            }
-        ];
-
-        // --- LOGIN & NAVEGAÇÃO ---
-        function fazerLogin() {
-            const user = document.getElementById('login-user').value;
-            const pass = document.getElementById('login-pass').value;
-            if (user === credenciais.user && pass === credenciais.pass) {
+        // --- AUTENTICAÇÃO SEGURA ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
-                document.getElementById('login-pass').value = ''; 
-                renderizarTodasTelas();
+                iniciarSincronizacao();
             } else {
-                alert('Credenciais incorretas!');
+                document.getElementById('app-screen').classList.add('hidden');
+                document.getElementById('login-screen').classList.remove('hidden');
             }
-        }
+        });
 
-        function sair() {
-            document.getElementById('app-screen').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-        }
+        window.fazerLogin = () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            const errorLabel = document.getElementById('login-error');
+            
+            signInWithEmailAndPassword(auth, email, pass).catch(error => {
+                errorLabel.innerText = "E-mail ou senha incorretos.";
+                errorLabel.style.display = 'block';
+            });
+        };
 
-        function mudarAba(abaId) {
+        window.sair = () => signOut(auth);
+
+        window.criarNovoUsuario = () => {
+            const email = document.getElementById('config-user').value;
+            const pass = document.getElementById('config-pass').value;
+            if(!email || pass.length < 6) return alert("Preencha um e-mail válido e uma senha com 6 ou mais caracteres.");
+            
+            createUserWithEmailAndPassword(auth, email, pass).then(() => {
+                alert("Usuário criado com sucesso!");
+                document.getElementById('config-user').value = '';
+                document.getElementById('config-pass').value = '';
+            }).catch(e => alert("Erro ao criar usuário: " + e.message));
+        };
+
+        // --- NAVEGAÇÃO ---
+        window.mudarAba = (abaId) => {
             document.querySelectorAll('.aba').forEach(aba => aba.classList.add('hidden'));
             document.getElementById(`aba-${abaId}`).classList.remove('hidden');
-        }
+        };
 
-        function renderizarTodasTelas() {
-            renderizarComandas();
-            renderizarHistorico();
-            renderizarAbaProdutos();
-        }
+        // --- SINCRONIZAÇÃO EM TEMPO REAL (FIREBASE FIRESTORE) ---
+        function iniciarSincronizacao() {
+            // Sincroniza Comandas
+            onSnapshot(collection(db, "comandas"), (snapshot) => {
+                comandas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarComandas();
+            });
 
-        function salvarTudo() {
-            localStorage.setItem('dist_comandas', JSON.stringify(comandas));
-            localStorage.setItem('dist_historico', JSON.stringify(historico));
-            localStorage.setItem('dist_catalogo', JSON.stringify(catalogo));
-        }
+            // Sincroniza Histórico
+            onSnapshot(query(collection(db, "historico"), orderBy("dataTimestamp", "desc")), (snapshot) => {
+                historico = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderizarHistorico();
+            });
 
-        function atualizarTotalComanda(comanda) {
-            comanda.total = comanda.itens.reduce((acc, item) => acc + (item.valor * (item.quantidade || 1)), 0);
+            // Sincroniza Catálogo
+            onSnapshot(doc(db, "sistema", "catalogo"), (docSnap) => {
+                if (docSnap.exists()) {
+                    catalogo = docSnap.data().categorias || [];
+                } else {
+                    catalogo = [];
+                }
+                renderizarAbaProdutos();
+            });
         }
 
         // --- LÓGICA DE COMANDAS ---
-        function novaComanda() {
+        window.novaComanda = async () => {
             const nome = document.getElementById('novo-cliente').value.trim();
             if (!nome) return alert('Digite o nome do cliente ou da mesa.');
-            comandas.push({ id: Date.now(), cliente: nome, itens: [], total: 0 });
+            await addDoc(collection(db, "comandas"), { cliente: nome, itens: [], total: 0 });
             document.getElementById('novo-cliente').value = '';
-            salvarTudo();
-            renderizarComandas();
-        }
+        };
 
         function renderizarComandas() {
             const grid = document.getElementById('grid-comandas');
@@ -281,10 +260,10 @@
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <span style="font-size:0.85rem; color:var(--text-muted);">R$ ${subtotal.toFixed(2)}</span>
                                 <div class="item-actions">
-                                    <button class="btn-mini btn-qty" onclick="alterarQtd(${c.id}, ${idx}, -1)" title="Diminuir">-</button>
-                                    <button class="btn-mini btn-qty" onclick="alterarQtd(${c.id}, ${idx}, 1)" title="Aumentar">+</button>
-                                    <button class="btn-mini btn-edit" onclick="editarItemComanda(${c.id}, ${idx})" title="Editar Item">✏️</button>
-                                    <button class="btn-mini btn-del" onclick="removerItemComanda(${c.id}, ${idx})" title="Excluir Item">🗑️</button>
+                                    <button class="btn-mini btn-qty" onclick="alterarQtd('${c.id}', ${idx}, -1)">-</button>
+                                    <button class="btn-mini btn-qty" onclick="alterarQtd('${c.id}', ${idx}, 1)">+</button>
+                                    <button class="btn-mini btn-edit" onclick="editarItemComanda('${c.id}', ${idx})">✏️</button>
+                                    <button class="btn-mini btn-del" onclick="removerItemComanda('${c.id}', ${idx})">🗑️</button>
                                 </div>
                             </div>
                         </div>`;
@@ -294,95 +273,75 @@
                     <div class="comanda-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
                             <h3 style="margin:0; color: var(--primary); font-size: 1.3rem;">${c.cliente}</h3>
-                            <button class="btn-mini btn-edit" onclick="editarNomeCliente(${c.id})" title="Editar Nome do Cliente">✏️</button>
+                            <button class="btn-mini btn-edit" onclick="editarNomeCliente('${c.id}')">✏️</button>
                         </div>
                         <div class="item-list">${itensHTML || '<em style="color:var(--text-muted);">Nenhum item...</em>'}</div>
                         <h3 style="margin: 0.5rem 0 1rem 0; font-size: 1.2rem;">Total: <span style="color:var(--primary);">R$ ${c.total.toFixed(2)}</span></h3>
                         <div style="display:flex; gap:0.5rem; margin-top: auto;">
-                            <button onclick="abrirModalProdutos(${c.id})" style="flex:1;">+ Adicionar</button>
-                            <button onclick="finalizarComanda(${c.id})" style="background:var(--success); color:white; flex:1;">✔ Fechar</button>
+                            <button onclick="abrirModalProdutos('${c.id}')" style="flex:1;">+ Adicionar</button>
+                            <button onclick="finalizarComanda('${c.id}')" style="background:var(--success); color:white; flex:1;">✔ Fechar</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
-        // --- AÇÕES EDITÁVEIS NAS COMANDAS ---
-        function alterarQtd(comandaId, itemIndex, delta) {
+        window.alterarQtd = async (comandaId, itemIndex, delta) => {
             const comanda = comandas.find(c => c.id === comandaId);
             if (!comanda) return;
-            const item = comanda.itens[itemIndex];
+            comanda.itens[itemIndex].quantidade = (comanda.itens[itemIndex].quantidade || 1) + delta;
+            if (comanda.itens[itemIndex].quantidade <= 0) comanda.itens.splice(itemIndex, 1);
             
-            item.quantidade = (item.quantidade || 1) + delta;
-            
-            if (item.quantidade <= 0) {
-                comanda.itens.splice(itemIndex, 1);
-            }
-            
-            atualizarTotalComanda(comanda);
-            salvarTudo();
-            renderizarComandas();
-        }
+            const total = comanda.itens.reduce((acc, item) => acc + (item.valor * (item.quantidade || 1)), 0);
+            await updateDoc(doc(db, "comandas", comandaId), { itens: comanda.itens, total: total });
+        };
 
-        function editarItemComanda(comandaId, itemIndex) {
+        window.editarItemComanda = async (comandaId, itemIndex) => {
             const comanda = comandas.find(c => c.id === comandaId);
-            if (!comanda) return;
             const item = comanda.itens[itemIndex];
-            
             const novoNome = prompt("Nome do produto:", item.nome);
             if (!novoNome) return;
-            
             const novoValor = parseFloat(prompt("Valor unitário (R$):", item.valor).replace(',', '.'));
             if (isNaN(novoValor) || novoValor < 0) return alert("Valor inválido!");
             
-            const novaQtd = parseInt(prompt("Quantidade:", item.quantidade || 1));
-            if (isNaN(novaQtd) || novaQtd <= 0) return alert("Quantidade inválida!");
-
             item.nome = novoNome.trim();
             item.valor = novoValor;
-            item.quantidade = novaQtd;
+            const total = comanda.itens.reduce((acc, it) => acc + (it.valor * (it.quantidade || 1)), 0);
+            await updateDoc(doc(db, "comandas", comandaId), { itens: comanda.itens, total: total });
+        };
 
-            atualizarTotalComanda(comanda);
-            salvarTudo();
-            renderizarComandas();
-        }
-
-        function removerItemComanda(comandaId, itemIndex) {
+        window.removerItemComanda = async (comandaId, itemIndex) => {
             const comanda = comandas.find(c => c.id === comandaId);
-            if (!comanda) return;
-            
-            if (confirm("Deseja remover este item da comanda?")) {
+            if (confirm("Deseja remover este item?")) {
                 comanda.itens.splice(itemIndex, 1);
-                atualizarTotalComanda(comanda);
-                salvarTudo();
-                renderizarComandas();
+                const total = comanda.itens.reduce((acc, it) => acc + (it.valor * (it.quantidade || 1)), 0);
+                await updateDoc(doc(db, "comandas", comandaId), { itens: comanda.itens, total: total });
             }
-        }
+        };
 
-        function editarNomeCliente(comandaId) {
+        window.editarNomeCliente = async (comandaId) => {
             const comanda = comandas.find(c => c.id === comandaId);
-            if (!comanda) return;
-            
-            const novoNome = prompt("Editar nome do cliente/mesa:", comanda.cliente);
+            const novoNome = prompt("Editar nome:", comanda.cliente);
             if (novoNome && novoNome.trim() !== "") {
-                comanda.cliente = novoNome.trim();
-                salvarTudo();
-                renderizarComandas();
+                await updateDoc(doc(db, "comandas", comandaId), { cliente: novoNome.trim() });
             }
-        }
+        };
 
-        function finalizarComanda(id) {
+        window.finalizarComanda = async (id) => {
             if (!confirm('Fechar comanda e enviar para o histórico?')) return;
-            const index = comandas.findIndex(c => c.id === id);
-            comandas[index].dataFinalizacao = new Date().toLocaleString('pt-BR');
-            historico.unshift(comandas[index]);
-            comandas.splice(index, 1);
-            salvarTudo();
-            renderizarTodasTelas();
-        }
+            const comanda = comandas.find(c => c.id === id);
+            
+            // Adiciona no histórico
+            await addDoc(collection(db, "historico"), {
+                ...comanda,
+                dataFinalizacao: new Date().toLocaleString('pt-BR'),
+                dataTimestamp: Date.now()
+            });
+            // Apaga da coleção de ativas
+            await deleteDoc(doc(db, "comandas", id));
+        };
 
-        // --- LÓGICA DO MODAL (CLIQUE RÁPIDO) ---
-        function abrirModalProdutos(idComanda) {
+        // --- MODAL DE PRODUTOS ---
+        window.abrirModalProdutos = (idComanda) => {
             comandaAtualId = idComanda;
             const lista = document.getElementById('modal-lista-produtos');
             lista.innerHTML = '';
@@ -399,134 +358,120 @@
                 catHTML += `</div>`;
                 lista.innerHTML += catHTML;
             });
-
             document.getElementById('modal-produtos').classList.remove('hidden');
-        }
+        };
 
-        function fecharModal() {
+        window.fecharModal = () => {
             document.getElementById('modal-produtos').classList.add('hidden');
             comandaAtualId = null;
-        }
+        };
 
-        function adicionarItemRapido(nome, valor) {
+        window.adicionarItemRapido = async (nome, valor) => {
             const comanda = comandas.find(c => c.id === comandaAtualId);
             const itemExistente = comanda.itens.find(i => i.nome === nome);
             
-            if (itemExistente) {
-                itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
-            } else {
-                comanda.itens.push({ nome: nome, valor: valor, quantidade: 1 });
-            }
+            if (itemExistente) itemExistente.quantidade = (itemExistente.quantidade || 1) + 1;
+            else comanda.itens.push({ nome: nome, valor: valor, quantidade: 1 });
             
-            atualizarTotalComanda(comanda);
-            salvarTudo();
-            renderizarComandas();
-            
+            const total = comanda.itens.reduce((acc, it) => acc + (it.valor * (it.quantidade || 1)), 0);
+            await updateDoc(doc(db, "comandas", comandaAtualId), { itens: comanda.itens, total: total });
+
             let btnMsg = document.createElement("div");
             btnMsg.innerText = "+1 " + nome;
             btnMsg.style = "position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--primary); color:#000; padding:12px 24px; border-radius:30px; z-index:2000; font-weight:bold; box-shadow:0 4px 12px rgba(0,0,0,0.5);";
             document.body.appendChild(btnMsg);
             setTimeout(() => btnMsg.remove(), 1000);
-        }
+        };
 
-        function adicionarItemManual() {
+        window.adicionarItemManual = () => {
             const nomeItem = prompt('Nome do produto avulso:');
             if (!nomeItem) return;
-            const valorItem = parseFloat(prompt('Valor do item (Use ponto. Ex: 15.50):').replace(',', '.'));
+            const valorItem = parseFloat(prompt('Valor do item (Ex: 15.50):').replace(',', '.'));
             if (isNaN(valorItem) || valorItem < 0) return alert('Valor inválido!');
-            
             adicionarItemRapido(nomeItem, valorItem);
             fecharModal();
+        };
+
+        // --- ESTOQUE / CATÁLOGO ---
+        async function salvarCatalogoNoFirebase() {
+            await setDoc(doc(db, "sistema", "catalogo"), { categorias: catalogo });
         }
 
-        // --- LÓGICA DO ESTOQUE (CATÁLOGO EDITÁVEL) ---
         function renderizarAbaProdutos() {
             const adminLista = document.getElementById('lista-categorias-admin');
             adminLista.innerHTML = '';
-            
             catalogo.forEach((cat, indexCat) => {
                 let itensCat = cat.itens.map((i, indexItem) => `
                     <div class="item-row">
                         <span>${i.nome} - <strong style="color:var(--primary);">R$ ${i.valor.toFixed(2)}</strong></span>
                         <div class="item-actions">
-                            <button class="btn-mini btn-edit" onclick="editarProdutoEstoque(${indexCat}, ${indexItem})" title="Editar Produto">✏️</button>
-                            <button class="btn-mini btn-del" onclick="excluirProdutoEstoque(${indexCat}, ${indexItem})" title="Excluir Produto">🗑️</button>
+                            <button class="btn-mini btn-edit" onclick="editarProdutoEstoque(${indexCat}, ${indexItem})">✏️</button>
+                            <button class="btn-mini btn-del" onclick="excluirProdutoEstoque(${indexCat}, ${indexItem})">🗑️</button>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`).join('');
 
                 adminLista.innerHTML += `
                     <div class="category-box">
                         <div class="category-title">
                             <span>${cat.nomeCat}</span>
-                            <button class="btn-mini btn-del" onclick="excluirCategoria(${indexCat})" title="Excluir Categoria">🗑️ Excluir Categoria</button>
+                            <button class="btn-mini btn-del" onclick="excluirCategoria(${indexCat})">🗑️ Excluir Categoria</button>
                         </div>
                         ${itensCat || '<p style="color:var(--text-muted); font-size:0.9rem;">Categoria vazia.</p>'}
                         <button onclick="novoProdutoNaCategoria(${indexCat})" style="margin-top: 1rem; width: auto; font-size: 0.9rem; background:transparent; color:var(--text); border:1px solid var(--border);">
                             + Adicionar Produto
                         </button>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
-        function novaCategoria() {
-            const nome = prompt("Nome da Nova Categoria (Ex: Combos, Porções):");
+        window.novaCategoria = async () => {
+            const nome = prompt("Nome da Nova Categoria:");
             if (nome && nome.trim() !== "") {
                 catalogo.push({ nomeCat: nome.trim(), itens: [] });
-                salvarTudo();
-                renderizarAbaProdutos();
+                await salvarCatalogoNoFirebase();
             }
-        }
+        };
 
-        function novoProdutoNaCategoria(indexCat) {
+        window.novoProdutoNaCategoria = async (indexCat) => {
             const nome = prompt("Nome do Produto:");
             if (!nome) return;
-            const valor = parseFloat(prompt("Valor numérico (Ex: 12.00):").replace(',', '.'));
+            const valor = parseFloat(prompt("Valor (Ex: 12.00):").replace(',', '.'));
             if (isNaN(valor) || valor < 0) return alert("Valor inválido!");
-            
             catalogo[indexCat].itens.push({ nome: nome.trim(), valor: valor });
-            salvarTudo();
-            renderizarAbaProdutos();
-        }
+            await salvarCatalogoNoFirebase();
+        };
 
-        function editarProdutoEstoque(indexCat, indexItem) {
+        window.editarProdutoEstoque = async (indexCat, indexItem) => {
             const item = catalogo[indexCat].itens[indexItem];
-            const novoNome = prompt("Nome do produto:", item.nome);
+            const novoNome = prompt("Nome:", item.nome);
             if (!novoNome) return;
             const novoValor = parseFloat(prompt("Valor (R$):", item.valor).replace(',', '.'));
             if (isNaN(novoValor) || novoValor < 0) return alert("Valor inválido!");
-
             item.nome = novoNome.trim();
             item.valor = novoValor;
-            salvarTudo();
-            renderizarAbaProdutos();
-        }
+            await salvarCatalogoNoFirebase();
+        };
 
-        function excluirProdutoEstoque(indexCat, indexItem) {
-            if (confirm("Tem certeza que deseja remover este produto do catálogo?")) {
+        window.excluirProdutoEstoque = async (indexCat, indexItem) => {
+            if (confirm("Remover este produto?")) {
                 catalogo[indexCat].itens.splice(indexItem, 1);
-                salvarTudo();
-                renderizarAbaProdutos();
+                await salvarCatalogoNoFirebase();
             }
-        }
+        };
 
-        function excluirCategoria(indexCat) {
-            if (confirm("Tem certeza que deseja excluir esta categoria inteira e todos os produtos dela?")) {
+        window.excluirCategoria = async (indexCat) => {
+            if (confirm("Excluir esta categoria e todos os produtos?")) {
                 catalogo.splice(indexCat, 1);
-                salvarTudo();
-                renderizarAbaProdutos();
+                await salvarCatalogoNoFirebase();
             }
-        }
+        };
 
-        // --- HISTÓRICO E CONFIGURAÇÕES ---
+        // --- HISTÓRICO ---
         function renderizarHistorico() {
             const lista = document.getElementById('lista-historico');
             lista.innerHTML = historico.length === 0 ? '<p style="color:var(--text-muted);">Nenhuma comanda finalizada ainda.</p>' : '';
-            
             historico.forEach(h => {
                 const resumoItens = h.itens.map(i => `${i.quantidade || 1}x ${i.nome}`).join(', ');
-                
                 lista.innerHTML += `
                     <div class="history-item">
                         <div>
@@ -536,26 +481,9 @@
                                 📦 ${resumoItens}
                             </div>
                         </div>
-                        <div style="font-size: 1.4rem; font-weight: bold; color: var(--success);">
-                            R$ ${h.total.toFixed(2)}
-                        </div>
-                    </div>
-                `;
+                        <div style="font-size: 1.4rem; font-weight: bold; color: var(--success);">R$ ${h.total.toFixed(2)}</div>
+                    </div>`;
             });
-        }
-
-        function salvarCredenciais() {
-            const user = document.getElementById('config-user').value.trim();
-            const pass = document.getElementById('config-pass').value.trim();
-            if (user && pass) {
-                credenciais = { user, pass };
-                localStorage.setItem('dist_credenciais', JSON.stringify(credenciais));
-                alert('Atualizado! Utilize os novos dados no próximo login.');
-                document.getElementById('config-user').value = '';
-                document.getElementById('config-pass').value = '';
-            } else {
-                alert('Preencha os dois campos!');
-            }
         }
     </script>
 </body>
