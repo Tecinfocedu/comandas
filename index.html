@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comandas - Ricken Bebidas</title>
-    <!-- Biblioteca para ler arquivos Excel (SheetJS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { 
@@ -39,7 +38,6 @@
         
         .container { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
         
-        /* GRIDS E CARDS */
         .comandas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem; }
         .comanda-card, .history-card { 
             background: var(--card); padding: 1rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
@@ -66,7 +64,6 @@
         .category-box { background: var(--card); padding: 1.2rem; margin-bottom: 1.2rem; border-radius: 8px; border: 1px solid var(--border); }
         .category-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); margin-bottom: 0.8rem; padding-bottom: 0.5rem; color: var(--primary); font-size: 1.2rem; margin-top: 0; }
         
-        /* MODAIS CUSTOMIZADOS */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: var(--card); padding: 1.5rem; border-radius: 12px; width: 95%; max-width: 500px; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--primary); display: flex; flex-direction: column; }
         .close-btn { position: absolute; right: 1rem; top: 1rem; background: var(--card-hover); color: var(--text); border: 1px solid var(--border); border-radius: 50%; width: 35px; height: 35px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -88,10 +85,22 @@
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .historico-lista { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
+        .history-card-row { 
+            background: var(--card); padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); border-left: 4px solid var(--info); display: flex; flex-direction: column;
+            transition: background 0.2s;
+        }
+        .history-card-row:hover { background: var(--card-hover); }
+        .history-row-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; cursor: pointer; }
+        .history-row-info { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .history-row-title { font-size: 1.1rem; font-weight: bold; color: var(--info); min-width: 150px; }
+        .history-row-datetime { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
+        .history-row-total { font-size: 1.2rem; font-weight: bold; color: var(--success); margin-left: auto; }
     </style>
 </head>
 <body>
-    <!-- Tela de Login -->
     <div id="login-screen">
         <div class="login-box">
             <h2 style="margin-top: 0; color: var(--primary); text-align: center;">Acesso ao Sistema</h2>
@@ -102,7 +111,6 @@
         </div>
     </div>
 
-    <!-- Interface Principal -->
     <div id="app-screen" class="hidden">
         <nav>
             <button onclick="mudarAba('comandas')">📝 Comandas</button>
@@ -113,7 +121,6 @@
         </nav>
 
         <div class="container">
-            <!-- Aba Comandas -->
             <div id="aba-comandas" class="aba">
                 <h2 style="color: var(--primary); margin-top: 0;">Comandas Ativas</h2>
                 <div style="display: flex; gap: 0.5rem; max-width: 500px; margin-bottom: 1rem;">
@@ -123,7 +130,6 @@
                 <div class="comandas-grid" id="grid-comandas"></div>
             </div>
 
-            <!-- Aba Produtos (Estoque) -->
             <div id="aba-produtos" class="aba hidden">
                 <h2 style="color: var(--primary); margin-top: 0;">Catálogo de Produtos</h2>
                 <div style="display: flex; gap: 0.5rem; max-width: 600px; margin-bottom: 1.5rem; flex-wrap: wrap;">
@@ -133,18 +139,15 @@
                 <div id="lista-categorias-admin"></div>
             </div>
 
-            <!-- Aba Histórico -->
             <div id="aba-historico" class="aba hidden">
                 <h2 style="color: var(--primary); margin-top: 0;">Comandas Finalizadas</h2>
                 <input type="text" id="busca-historico" placeholder="🔍 Buscar cliente ou data..." onkeyup="pesquisarHistorico()" style="max-width: 400px; margin-bottom: 1.5rem;">
-                <div class="comandas-grid" id="lista-historico"></div>
+                <div class="historico-lista" id="lista-historico"></div>
             </div>
 
-            <!-- Aba Configurações -->
             <div id="aba-config" class="aba hidden">
                 <h2 style="color: var(--primary); margin-top: 0;">Configurações</h2>
                 
-                <!-- Sessão de Importar Planilha -->
                 <div style="max-width: 500px; background: var(--card); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 2rem;">
                     <h3 style="margin-top:0; color: var(--info);">📊 Importar Estoque (Excel / CSV)</h3>
                     <p style="color: var(--text-muted); font-size: 0.9rem;">
@@ -167,7 +170,6 @@
         </div>
     </div>
 
-    <!-- Modal Adicionar Produtos na Comanda -->
     <div id="modal-produtos" class="modal hidden">
         <div class="modal-content">
             <button class="close-btn" onclick="fecharModal()">X</button>
@@ -189,7 +191,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE DIÁLOGO CUSTOMIZADO (SUBSTITUI PROMPT, ALERT E CONFIRM) -->
     <div id="custom-dialog-modal" class="modal hidden">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <h3 id="dialog-title" style="margin-top: 0; color: var(--primary);">Ricken Bebidas</h3>
@@ -202,7 +203,6 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
@@ -225,9 +225,8 @@
         let comandas = [];
         let historico = [];
         let catalogo = [];
-        let comandaAtualId = null; 
+        let comandaAtualId = null;
 
-        // --- CORREÇÃO DE ACENTUAÇÃO E UTF-8 ---
         function fixEncoding(str) {
             if (typeof str !== 'string') return str;
             try {
@@ -238,7 +237,6 @@
             return str;
         }
 
-        // --- SISTEMA DE DIÁLOGOS CUSTOMIZADOS (SEM POPUPS DO NAVEGADOR) ---
         window.customAlert = (msg, onOk) => {
             const modal = document.getElementById('custom-dialog-modal');
             document.getElementById('dialog-title').innerText = 'Ricken Bebidas';
@@ -327,7 +325,6 @@
             };
         };
 
-        // --- AUTENTICAÇÃO ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('login-screen').classList.add('hidden');
@@ -366,7 +363,6 @@
             document.getElementById(`aba-${abaId}`).classList.remove('hidden');
         };
 
-        // --- SINCRONIZAÇÃO ---
         function iniciarSincronizacao() {
             onSnapshot(collection(db, "comandas"), (snapshot) => {
                 comandas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -382,7 +378,6 @@
             });
         }
 
-        // --- TOGGLES DE LISTA ---
         window.toggleItensGerais = (elementId, btnId) => {
             const lista = document.getElementById(elementId);
             const btn = document.getElementById(btnId);
@@ -395,7 +390,6 @@
             }
         };
 
-        // --- COMANDAS LÓGICA ---
         window.novaComanda = async () => {
             const nome = document.getElementById('novo-cliente').value.trim();
             if (!nome) return customAlert('Digite o nome do cliente ou da mesa.');
@@ -439,8 +433,9 @@
                             ${itensHTML || '<em style="color:var(--text-muted); font-size: 0.8rem;">Vazio...</em>'}
                         </div>
                         
-                        <div style="display:flex; gap:0.5rem; margin-top: auto;">
+                        <div style="display:flex; gap:0.5rem; margin-top: auto; flex-wrap: wrap;">
                             <button onclick="abrirModalProdutos('${c.id}')" style="flex:1; padding: 0.6rem;">+ Adicionar</button>
+                            <button onclick="abaterPagamentoComanda('${c.id}')" style="background:var(--info); color:white; flex:1; padding: 0.6rem;">💰 Abater</button>
                             <button onclick="finalizarComanda('${c.id}')" style="background:var(--success); color:white; flex:1; padding: 0.6rem;">✔ Fechar</button>
                         </div>
                     </div>`;
@@ -454,6 +449,7 @@
             const total = comanda.itens.reduce((acc, item) => acc + (item.valor * (item.quantidade || 1)), 0);
             await updateDoc(doc(db, "comandas", comandaId), { itens: comanda.itens, total: total });
         };
+
         window.removerItemComanda = (comandaId, itemIndex) => {
             customConfirm("Deseja remover este item da comanda?", async () => {
                 const comanda = comandas.find(c => c.id === comandaId);
@@ -462,6 +458,7 @@
                 await updateDoc(doc(db, "comandas", comandaId), { itens: comanda.itens, total: total });
             });
         };
+
         window.editarNomeCliente = (comandaId) => {
             const comanda = comandas.find(c => c.id === comandaId);
             customPrompt("Editar Nome", [{ id: 'nome', label: 'Nome do Cliente ou Mesa', value: comanda.cliente }], async (res) => {
@@ -470,15 +467,52 @@
                 }
             });
         };
+
+        window.abaterPagamentoComanda = (comandaId) => {
+            const comanda = comandas.find(c => c.id === comandaId);
+            if (!comanda) return;
+
+            customPrompt(`Abater Valor - ${fixEncoding(comanda.cliente)}`, [
+                { id: 'valor', label: `Valor a abater (Total atual: R$ ${comanda.total.toFixed(2)})`, type: 'number', placeholder: '0.00' }
+            ], async (res) => {
+                const valorPago = parseFloat(String(res.valor).replace(',', '.'));
+
+                if (isNaN(valorPago) || valorPago <= 0) {
+                    return customAlert("Digite um valor válido para abater.");
+                }
+
+                if (valorPago > comanda.total) {
+                    return customAlert("O valor informado é maior que o total da comanda!");
+                }
+
+                const novoTotal = comanda.total - valorPago;
+
+                await updateDoc(doc(db, "comandas", comandaId), {
+                    total: novoTotal
+                });
+
+                customAlert(`R$ ${valorPago.toFixed(2)} abatido com sucesso!\nSaldo restante: R$ ${novoTotal.toFixed(2)}`);
+            });
+        };
+
         window.finalizarComanda = (id) => {
             customConfirm("Fechar comanda e enviar para o histórico?", async () => {
                 const comanda = comandas.find(c => c.id === id);
-                await addDoc(collection(db, "historico"), { ...comanda, dataFinalizacao: new Date().toLocaleString('pt-BR'), dataTimestamp: Date.now() });
+                if (!comanda) return;
+                const agora = new Date();
+                const dataStr = agora.toLocaleDateString('pt-BR');
+                const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const dataFinalizacaoCompleta = `${dataStr} às ${horaStr}`;
+
+                await addDoc(collection(db, "historico"), { 
+                    ...comanda, 
+                    dataFinalizacao: dataFinalizacaoCompleta,
+                    dataTimestamp: Date.now() 
+                });
                 await deleteDoc(doc(db, "comandas", id));
             });
         };
 
-        // --- ESTOQUE LÓGICA E PESQUISA ---
         window.pesquisarEstoque = () => renderizarAbaProdutos(document.getElementById('busca-estoque').value);
 
         function renderizarAbaProdutos(filtro = '') {
@@ -509,7 +543,10 @@
                     <div class="category-box">
                         <div class="category-title">
                             <span>${catNomeFix}</span>
-                            <button class="btn-mini btn-del" onclick="excluirCategoria(${indexCat})">🗑️ Excluir Categoria</button>
+                            <div style="display:flex; gap:4px;">
+                                <button class="btn-mini btn-edit" onclick="editarCategoria(${indexCat})">✏️ Renomear</button>
+                                <button class="btn-mini btn-del" onclick="excluirCategoria(${indexCat})">🗑️ Excluir</button>
+                            </div>
                         </div>
                         <button id="btn-toggle-est-${indexCat}" class="btn-toggle-itens" onclick="toggleItensGerais('itens-est-${indexCat}', 'btn-toggle-est-${indexCat}')" style="margin-bottom:0.8rem; border-color:var(--border);">
                             ${btnText} (${cat.itens.length})
@@ -534,6 +571,17 @@
                 }
             });
         };
+
+        window.editarCategoria = (indexCat) => {
+            const cat = catalogo[indexCat];
+            customPrompt("Renomear Categoria", [{ id: 'nome', label: 'Novo Nome da Categoria', value: cat.nomeCat }], async (res) => {
+                if (res.nome && res.nome.trim() !== "") {
+                    cat.nomeCat = fixEncoding(res.nome.trim());
+                    await salvarCatalogoNoFirebase();
+                }
+            });
+        };
+
         window.novoProdutoNaCategoria = (indexCat) => {
             customPrompt("Novo Produto", [
                 { id: 'nome', label: 'Nome do Produto' },
@@ -548,6 +596,7 @@
                 }
             });
         };
+
         window.editarProdutoEstoque = (indexCat, indexItem) => {
             const item = catalogo[indexCat].itens[indexItem];
             customPrompt("Editar Produto", [
@@ -562,12 +611,14 @@
                 }
             });
         };
+
         window.excluirProdutoEstoque = (indexCat, indexItem) => {
             customConfirm("Remover este produto do cardápio?", async () => {
                 catalogo[indexCat].itens.splice(indexItem, 1);
                 await salvarCatalogoNoFirebase();
             });
         };
+
         window.excluirCategoria = (indexCat) => {
             customConfirm("ATENÇÃO: Excluir esta categoria e todos os produtos dentro dela?", async () => {
                 catalogo.splice(indexCat, 1);
@@ -575,7 +626,6 @@
             });
         };
 
-        // --- HISTÓRICO LÓGICA E PESQUISA ---
         window.pesquisarHistorico = () => renderizarHistorico(document.getElementById('busca-historico').value);
 
         function renderizarHistorico(filtro = '') {
@@ -595,34 +645,35 @@
             }
 
             histFiltrado.forEach(h => {
+                const qtdItens = h.itens ? h.itens.reduce((acc, i) => acc + (i.quantidade || 1), 0) : 0;
                 const isExpanded = termo !== '' ? '' : 'hidden'; 
-                const btnText = termo !== '' ? '🔼 Ocultar Detalhes' : '🔽 Ver Detalhes';
+                const btnText = termo !== '' ? `🔼 Ocultar Itens (${qtdItens})` : `🔽 Ver Itens (${qtdItens})`;
                 
-                let itensHTML = h.itens.map(i => `
-                    <div class="item-row" style="background:var(--bg);">
+                let itensHTML = h.itens ? h.itens.map(i => `
+                    <div class="item-row">
                         <div class="item-info"><span class="item-qtd">${i.quantidade || 1}x</span> ${fixEncoding(i.nome)}</div>
-                        <span style="font-size:0.8rem;">R$ ${(i.valor * (i.quantidade || 1)).toFixed(2)}</span>
-                    </div>`).join('');
+                        <span style="font-size:0.8rem; color:var(--text-muted);">R$ ${(i.valor * (i.quantidade || 1)).toFixed(2)}</span>
+                    </div>`).join('') : '';
 
                 lista.innerHTML += `
-                    <div class="history-card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
-                            <strong style="font-size: 1.1rem; color: var(--info);">${fixEncoding(h.cliente)}</strong>
-                            <strong style="font-size: 1.1rem; color: var(--success);">R$ ${h.total.toFixed(2)}</strong>
+                    <div class="history-card-row">
+                        <div class="history-row-header" onclick="toggleItensGerais('itens-hist-${h.id}', 'btn-toggle-hist-${h.id}')">
+                            <div class="history-row-info">
+                                <div class="history-row-title">👤 ${fixEncoding(h.cliente)}</div>
+                                <div class="history-row-datetime">📅 ${h.dataFinalizacao || 'Sem data'}</div>
+                            </div>
+                            <div class="history-row-total">R$ ${h.total.toFixed(2)}</div>
                         </div>
-                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">📅 ${h.dataFinalizacao || 'Sem data'}</div>
-                        
-                        <button id="btn-toggle-hist-${h.id}" class="btn-toggle-itens" onclick="toggleItensGerais('itens-hist-${h.id}', 'btn-toggle-hist-${h.id}')">
+                        <button id="btn-toggle-hist-${h.id}" class="btn-toggle-itens" onclick="toggleItensGerais('itens-hist-${h.id}', 'btn-toggle-hist-${h.id}')" style="margin-top:0.6rem;">
                             ${btnText}
                         </button>
-                        <div id="itens-hist-${h.id}" class="${isExpanded}" style="margin-top:0.5rem;">
-                            ${itensHTML}
+                        <div id="itens-hist-${h.id}" class="item-list ${isExpanded}" style="margin-top:0.5rem; max-height:200px;">
+                            ${itensHTML || '<em style="color:var(--text-muted); font-size: 0.8rem;">Sem itens...</em>'}
                         </div>
                     </div>`;
             });
         }
 
-        // --- IMPORTAR EXCEL COM SUPORTE UTF-8 PERFEITO ---
         window.importarExcel = () => {
             const fileInput = document.getElementById('file-excel');
             if (!fileInput.files.length) return customAlert("Selecione um arquivo Excel (.xlsx ou .csv) primeiro!");
@@ -701,7 +752,6 @@
             }
         };
 
-        // --- LÓGICA DO MODAL ---
         window.abrirModalProdutos = (idComanda) => {
             comandaAtualId = idComanda; voltarParaCategorias();
             const viewCat = document.getElementById('modal-view-categorias'); viewCat.innerHTML = '';
@@ -710,12 +760,15 @@
             });
             document.getElementById('modal-produtos').classList.remove('hidden');
         };
+
         window.fecharModal = () => { document.getElementById('modal-produtos').classList.add('hidden'); comandaAtualId = null; };
+
         window.voltarParaCategorias = () => {
             document.getElementById('modal-search').value = '';
             document.getElementById('modal-view-itens').classList.add('hidden');
             document.getElementById('modal-view-categorias').classList.remove('hidden');
         };
+
         window.entrarNaCategoria = (indexCat) => {
             document.getElementById('modal-view-categorias').classList.add('hidden');
             document.getElementById('modal-view-itens').classList.remove('hidden');
@@ -730,6 +783,7 @@
                     </button>`;
             });
         };
+
         window.pesquisarProdutoModal = () => {
             const termo = document.getElementById('modal-search').value.toLowerCase().trim();
             if (termo === '') return voltarParaCategorias();
@@ -749,6 +803,7 @@
             }));
             if(!achou) lista.innerHTML = `<p style="color:var(--text-muted); width:100%; text-align:center;">Nada encontrado.</p>`;
         };
+
         window.adicionarItemRapido = async (nome, valor) => {
             const comanda = comandas.find(c => c.id === comandaAtualId);
             const itemExistente = comanda.itens.find(i => fixEncoding(i.nome) === fixEncoding(nome));
@@ -760,6 +815,7 @@
             btnMsg.style = "position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--primary); color:#000; padding:12px 24px; border-radius:30px; z-index:2000; font-weight:bold;";
             document.body.appendChild(btnMsg); setTimeout(() => btnMsg.remove(), 1000);
         };
+
         window.adicionarItemManual = () => {
             customPrompt("Adicionar Item Avulso", [
                 { id: 'nome', label: 'Nome do Produto' },
