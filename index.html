@@ -134,6 +134,7 @@
                 <h2 style="color: var(--primary); margin-top: 0;">Catálogo de Produtos</h2>
                 <div style="display: flex; gap: 0.5rem; max-width: 600px; margin-bottom: 1.5rem; flex-wrap: wrap;">
                     <button onclick="novaCategoria()">+ Nova Categoria</button>
+                    <button onclick="ordenarEstoqueAZ()" style="background:var(--card-hover); color:var(--text); border:1px solid var(--border);">🔤 Ordenar A-Z</button>
                     <input type="text" id="busca-estoque" placeholder="🔍 Buscar produto ou categoria..." onkeyup="pesquisarEstoque()" style="flex:1; margin-top:0; min-width: 250px;">
                 </div>
                 <div id="lista-categorias-admin"></div>
@@ -525,6 +526,8 @@
                 const itensFiltrados = cat.itens.map((i, indexItem) => ({ ...i, originalIndex: indexItem }))
                     .filter(i => termo === '' || fixEncoding(i.nome).toLowerCase().includes(termo) || catNomeFix.toLowerCase().includes(termo));
                 
+                itensFiltrados.sort((a, b) => fixEncoding(a.nome).localeCompare(fixEncoding(b.nome), 'pt-BR'));
+
                 if (termo !== '' && itensFiltrados.length === 0 && !catNomeFix.toLowerCase().includes(termo)) return;
 
                 const isExpanded = termo !== '' ? '' : 'hidden';
@@ -563,6 +566,15 @@
         
         async function salvarCatalogoNoFirebase() { await setDoc(doc(db, "sistema", "catalogo"), { categorias: catalogo }); }
         
+        window.ordenarEstoqueAZ = async () => {
+            catalogo.sort((a, b) => fixEncoding(a.nomeCat).localeCompare(fixEncoding(b.nomeCat), 'pt-BR'));
+            catalogo.forEach(cat => {
+                cat.itens.sort((a, b) => fixEncoding(a.nome).localeCompare(fixEncoding(b.nome), 'pt-BR'));
+            });
+            await salvarCatalogoNoFirebase();
+            customAlert("Categorias e produtos ordenados de A a Z com sucesso!");
+        };
+
         window.novaCategoria = () => {
             customPrompt("Nova Categoria", [{ id: 'nome', label: 'Nome da Categoria (Ex: Cervejas, Combos)' }], async (res) => {
                 if (res.nome && res.nome.trim() !== "") {
@@ -775,7 +787,10 @@
             const cat = catalogo[indexCat];
             document.getElementById('titulo-categoria-modal').innerText = fixEncoding(cat.nomeCat);
             const lista = document.getElementById('modal-lista-produtos'); lista.innerHTML = '';
-            cat.itens.forEach(item => {
+            
+            const itensOrdenados = [...cat.itens].sort((a, b) => fixEncoding(a.nome).localeCompare(fixEncoding(b.nome), 'pt-BR'));
+
+            itensOrdenados.forEach(item => {
                 lista.innerHTML += `
                     <button class="produto-btn" onclick="adicionarItemRapido('${fixEncoding(item.nome)}', ${item.valor})">
                         <span class="nome">${fixEncoding(item.nome)}</span>
