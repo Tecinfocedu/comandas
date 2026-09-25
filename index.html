@@ -1,105 +1,465 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comandas - Ricken Bebidas</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { 
-            --bg: #121212; --card: #1e1e1e; --card-hover: #2a2a2a;
-            --primary: #f5c71a; --primary-hover: #dfb213;
-            --text: #f3f4f6; --text-muted: #9ca3af;
-            --border: #333333; --danger: #ef4444;
-            --success: #10b981; --info: #3b82f6;
+        :root {
+            --bg: #121212;
+            --card: #1e1e1e;
+            --card-hover: #2a2a2a;
+            --primary: #f5c71a;
+            --primary-hover: #dfb213;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #333333;
+            --danger: #ef4444;
+            --success: #10b981;
+            --info: #3b82f6;
         }
-        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; }
-        .hidden { display: none !important; }
-        input, select { 
-            width: 100%; padding: 0.8rem; margin-top: 0.5rem; 
-            background: #2a2a2a; border: 1px solid var(--border); 
-            color: var(--text); border-radius: 6px; box-sizing: border-box; 
-        }
-        input:focus { outline: 2px solid var(--primary); border-color: transparent; }
-        button { 
-            background: var(--primary); color: #000; border: none; cursor: pointer; 
-            font-weight: bold; padding: 0.8rem; border-radius: 6px; transition: 0.2s;
-        }
-        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        
-        #login-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .login-box { background: var(--card); padding: 2.5rem; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); width: 320px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; }
-        
-        nav { background: var(--card); padding: 1rem; display: flex; gap: 0.8rem; border-bottom: 2px solid var(--primary); overflow-x: auto; white-space: nowrap; }
-        nav button { background: transparent; color: var(--text); border: 1px solid var(--border); }
-        nav button:hover { background: var(--primary); color: #000; border-color: var(--primary); }
-        .btn-sair { margin-left: auto; border-color: var(--danger) !important; color: var(--danger) !important; }
-        .btn-sair:hover { background: var(--danger) !important; color: white !important; }
-        
-        .container { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
-        
-        .comandas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1rem; }
-        .comanda-card, .history-card { 
-            background: var(--card); padding: 1rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
-            border: 1px solid var(--border); display: flex; flex-direction: column; 
-        }
-        .comanda-card { border-top: 4px solid var(--primary); }
-        .history-card { border-top: 4px solid var(--info); }
-        
-        .btn-toggle-itens { background: transparent; color: var(--text-muted); border: 1px solid var(--border); margin: 0.5rem 0; padding: 0.4rem; font-size: 0.85rem; width: 100%; text-align: left; }
-        .btn-toggle-itens:hover { color: var(--primary); border-color: var(--primary); }
-        
-        .item-list { font-size: 0.85rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; flex-grow: 1; max-height: 200px; overflow-y: auto; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; background: var(--card-hover); padding: 0.3rem 0.5rem; border-radius: 6px; gap: 6px; }
-        .item-info { display: flex; align-items: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-        .item-qtd { font-weight: bold; color: var(--primary); margin-right: 6px; }
-        .item-actions { display: flex; gap: 4px; align-items: center; }
-        
-        .btn-mini { padding: 4px 6px; font-size: 0.75rem; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-qty { background: var(--border); color: var(--text); }
-        .btn-qty:hover { background: var(--primary); color: #000; }
-        .btn-edit { background: var(--info); color: white; }
-        .btn-del { background: var(--danger); color: white; }
-        
-        .category-box { background: var(--card); padding: 1.2rem; margin-bottom: 1.2rem; border-radius: 8px; border: 1px solid var(--border); }
-        .category-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); margin-bottom: 0.8rem; padding-bottom: 0.5rem; color: var(--primary); font-size: 1.2rem; margin-top: 0; }
-        
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: var(--card); padding: 1.5rem; border-radius: 12px; width: 95%; max-width: 500px; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid var(--primary); display: flex; flex-direction: column; }
-        .close-btn { position: absolute; right: 1rem; top: 1rem; background: var(--card-hover); color: var(--text); border: 1px solid var(--border); border-radius: 50%; width: 35px; height: 35px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .close-btn:hover { background: var(--danger); color: white; border-color: var(--danger); }
-        
-        .grid-categorias-modal, .grid-produtos-modal { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; margin-top: 1rem; }
-        .btn-categoria { flex: 1 1 calc(50% - 0.6rem); background: var(--card-hover); border: 1px solid var(--border); padding: 1.5rem 1rem; border-radius: 8px; font-size: 1.1rem; font-weight: bold; color: var(--primary); cursor: pointer; text-align: center; }
-        .btn-categoria:hover { background: var(--primary); color: #000; }
-        
-        .produto-btn { background: var(--card-hover); border: 1px solid var(--border); padding: 0.8rem; border-radius: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; flex: 1 1 calc(50% - 0.6rem); color: var(--text); }
-        .produto-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); }
-        .produto-btn span.nome { font-weight: bold; font-size: 0.95rem; text-align: center;}
-        .produto-btn span.preco { font-size: 0.85rem; margin-top: 0.3rem; color: var(--text-muted); }
 
-        .btn-voltar { background: transparent; color: var(--text); border: 1px solid var(--text-muted); padding: 0.5rem 1rem; border-radius: 6px; margin-bottom: 1rem; align-self: flex-start; }
-        .btn-voltar:hover { background: var(--border); }
+        body {
+            font-family: system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+        }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        .hidden {
+            display: none !important;
+        }
 
-        .historico-lista { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
-        .history-card-row { 
-            background: var(--card); padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
-            border: 1px solid var(--border); border-left: 4px solid var(--info); display: flex; flex-direction: column;
+        input,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            background: #2a2a2a;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: 2px solid var(--primary);
+            border-color: transparent;
+        }
+
+        button {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0.8rem;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        #login-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            width: 320px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            background: var(--card);
+            padding: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            border-bottom: 2px solid var(--primary);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        nav button {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        nav button:hover {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .btn-sair {
+            margin-left: auto;
+            border-color: var(--danger) !important;
+            color: var(--danger) !important;
+        }
+
+        .btn-sair:hover {
+            background: var(--danger) !important;
+            color: white !important;
+        }
+
+        .container {
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .comandas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .comanda-card,
+        .history-card {
+            background: var(--card);
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comanda-card {
+            border-top: 4px solid var(--primary);
+        }
+
+        .history-card {
+            border-top: 4px solid var(--info);
+        }
+
+        .btn-toggle-itens {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            margin: 0.5rem 0;
+            padding: 0.4rem;
+            font-size: 0.85rem;
+            width: 100%;
+            text-align: left;
+        }
+
+        .btn-toggle-itens:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .item-list {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            flex-grow: 1;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.3rem;
+            background: var(--card-hover);
+            padding: 0.3rem 0.5rem;
+            border-radius: 6px;
+            gap: 6px;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .item-qtd {
+            font-weight: bold;
+            color: var(--primary);
+            margin-right: 6px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .btn-mini {
+            padding: 4px 6px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-qty {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .btn-qty:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-edit {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-del {
+            background: var(--danger);
+            color: white;
+        }
+
+        .category-box {
+            background: var(--card);
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .category-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-top: 0;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            background: var(--card-hover);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .grid-categorias-modal,
+        .grid-produtos-modal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-categoria {
+            flex: 1 1 calc(50% - 0.6rem);
+            background: var(--card-hover);
+            border: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-categoria:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .produto-btn {
+            background: var(--card-hover);
+            border: 1px solid var(--border);
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1 1 calc(50% - 0.6rem);
+            color: var(--text);
+        }
+
+        .produto-btn:hover {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .produto-btn span.nome {
+            font-weight: bold;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .produto-btn span.preco {
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            color: var(--text-muted);
+        }
+
+        .btn-voltar {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            align-self: flex-start;
+        }
+
+        .btn-voltar:hover {
+            background: var(--border);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .historico-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .history-card-row {
+            background: var(--card);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--info);
+            display: flex;
+            flex-direction: column;
             transition: background 0.2s;
         }
-        .history-card-row:hover { background: var(--card-hover); }
-        .history-row-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; cursor: pointer; }
-        .history-row-info { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-        .history-row-title { font-size: 1.1rem; font-weight: bold; color: var(--info); min-width: 150px; }
-        .history-row-datetime { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
-        .history-row-total { font-size: 1.2rem; font-weight: bold; color: var(--success); margin-left: auto; }
+
+        .history-card-row:hover {
+            background: var(--card-hover);
+        }
+
+        .history-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .history-row-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .history-row-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--info);
+            min-width: 150px;
+        }
+
+        .history-row-datetime {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-row-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--success);
+            margin-left: auto;
+        }
     </style>
 </head>
+
 <body>
     <div id="login-screen">
         <div class="login-box">
@@ -134,38 +494,50 @@
                 <h2 style="color: var(--primary); margin-top: 0;">Catálogo de Produtos</h2>
                 <div style="display: flex; gap: 0.5rem; max-width: 600px; margin-bottom: 1.5rem; flex-wrap: wrap;">
                     <button onclick="novaCategoria()">+ Nova Categoria</button>
-                    <button onclick="ordenarEstoqueAZ()" style="background:var(--card-hover); color:var(--text); border:1px solid var(--border);">🔤 Ordenar A-Z</button>
-                    <input type="text" id="busca-estoque" placeholder="🔍 Buscar produto ou categoria..." onkeyup="pesquisarEstoque()" style="flex:1; margin-top:0; min-width: 250px;">
+                    <button onclick="ordenarEstoqueAZ()"
+                        style="background:var(--card-hover); color:var(--text); border:1px solid var(--border);">🔤
+                        Ordenar A-Z</button>
+                    <input type="text" id="busca-estoque" placeholder="🔍 Buscar produto ou categoria..."
+                        onkeyup="pesquisarEstoque()" style="flex:1; margin-top:0; min-width: 250px;">
                 </div>
                 <div id="lista-categorias-admin"></div>
             </div>
 
             <div id="aba-historico" class="aba hidden">
                 <h2 style="color: var(--primary); margin-top: 0;">Comandas Finalizadas</h2>
-                <input type="text" id="busca-historico" placeholder="🔍 Buscar cliente ou data..." onkeyup="pesquisarHistorico()" style="max-width: 400px; margin-bottom: 1.5rem;">
+                <input type="text" id="busca-historico" placeholder="🔍 Buscar cliente ou data..."
+                    onkeyup="pesquisarHistorico()" style="max-width: 400px; margin-bottom: 1.5rem;">
                 <div class="historico-lista" id="lista-historico"></div>
             </div>
 
             <div id="aba-config" class="aba hidden">
                 <h2 style="color: var(--primary); margin-top: 0;">Configurações</h2>
-                
-                <div style="max-width: 500px; background: var(--card); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 2rem;">
+
+                <div
+                    style="max-width: 500px; background: var(--card); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 2rem;">
                     <h3 style="margin-top:0; color: var(--info);">📊 Importar Estoque (Excel / CSV)</h3>
                     <p style="color: var(--text-muted); font-size: 0.9rem;">
-                        Suba uma planilha <b>.xlsx</b> ou <b>.csv</b>. A primeira linha deve conter os cabeçalhos:<br> 
+                        Suba uma planilha <b>.xlsx</b> ou <b>.csv</b>. A primeira linha deve conter os cabeçalhos:<br>
                         <strong style="color: var(--text);">Categoria | Produto | Valor</strong>
                     </p>
-                    <input type="file" id="file-excel" accept=".xlsx, .xls, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                    <button onclick="importarExcel()" style="width: 100%; margin-top: 1rem; background: var(--info); color: white;">Carregar Planilha</button>
+                    <input type="file" id="file-excel"
+                        accept=".xlsx, .xls, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                    <button onclick="importarExcel()"
+                        style="width: 100%; margin-top: 1rem; background: var(--info); color: white;">Carregar
+                        Planilha</button>
                 </div>
 
-                <div style="max-width: 500px; background: var(--card); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <div
+                    style="max-width: 500px; background: var(--card); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
                     <h3 style="margin-top:0; color: var(--danger);">🔒 Segurança (Trocar Usuário)</h3>
                     <label style="color: var(--text-muted); font-size: 0.9rem;">Novo E-mail</label>
                     <input type="email" id="config-user" placeholder="Digite o novo e-mail">
-                    <label style="display:block; margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">Nova Senha (Mín. 6 letras/números)</label>
+                    <label style="display:block; margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">Nova
+                        Senha (Mín. 6 letras/números)</label>
                     <input type="password" id="config-pass" placeholder="Digite a nova senha">
-                    <button onclick="criarNovoUsuario()" style="width: 100%; margin-top: 1.5rem; background: var(--danger); color: white;">Criar e Trocar Usuário</button>
+                    <button onclick="criarNovoUsuario()"
+                        style="width: 100%; margin-top: 1.5rem; background: var(--danger); color: white;">Criar e Trocar
+                        Usuário</button>
                 </div>
             </div>
         </div>
@@ -175,18 +547,21 @@
         <div class="modal-content">
             <button class="close-btn" onclick="fecharModal()">X</button>
             <h2 style="margin-top: 0; color: var(--primary); font-size: 1.3rem;">Adicionar Item</h2>
-            <input type="text" id="modal-search" placeholder="🔍 Buscar produto pelo nome..." onkeyup="pesquisarProdutoModal()" style="margin-bottom: 1rem;">
-            
+            <input type="text" id="modal-search" placeholder="🔍 Buscar produto pelo nome..."
+                onkeyup="pesquisarProdutoModal()" style="margin-bottom: 1rem;">
+
             <div id="modal-view-categorias" class="grid-categorias-modal"></div>
 
             <div id="modal-view-itens" class="hidden" style="display: flex; flex-direction: column; flex-grow: 1;">
                 <button class="btn-voltar" onclick="voltarParaCategorias()">⬅ Voltar</button>
-                <h3 id="titulo-categoria-modal" style="margin-top: 0; color: var(--text-muted); font-size: 1.1rem;"></h3>
+                <h3 id="titulo-categoria-modal" style="margin-top: 0; color: var(--text-muted); font-size: 1.1rem;">
+                </h3>
                 <div id="modal-lista-produtos" class="grid-produtos-modal"></div>
             </div>
 
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 1.5rem 0 1rem 0;">
-            <button onclick="adicionarItemManual()" style="background: transparent; color: var(--text); border: 1px dashed var(--border); width: 100%; margin: 0; padding: 0.6rem;">
+            <button onclick="adicionarItemManual()"
+                style="background: transparent; color: var(--text); border: 1px dashed var(--border); width: 100%; margin: 0; padding: 0.6rem;">
                 ✍️ Adicionar Item Avulso (Manual)
             </button>
         </div>
@@ -195,16 +570,20 @@
     <div id="custom-dialog-modal" class="modal hidden">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
             <h3 id="dialog-title" style="margin-top: 0; color: var(--primary);">Ricken Bebidas</h3>
-            <p id="dialog-message" style="color: var(--text); font-size: 0.95rem; margin-bottom: 1.2rem; white-space: pre-line;"></p>
-            <div id="dialog-inputs" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem;"></div>
+            <p id="dialog-message"
+                style="color: var(--text); font-size: 0.95rem; margin-bottom: 1.2rem; white-space: pre-line;"></p>
+            <div id="dialog-inputs" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem;">
+            </div>
             <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                <button id="dialog-btn-cancel" class="btn-voltar" style="margin: 0; flex: 1; border-color: var(--border);">Cancelar</button>
+                <button id="dialog-btn-cancel" class="btn-voltar"
+                    style="margin: 0; flex: 1; border-color: var(--border);">Cancelar</button>
                 <button id="dialog-btn-confirm" style="flex: 1;">OK</button>
             </div>
         </div>
     </div>
 
     <script type="module">
+        let comandasAbertas = new Set();
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
         import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
@@ -234,7 +613,7 @@
                 if (/[\xC2-\xF4][\x80-\xBF]/.test(str)) {
                     return decodeURIComponent(escape(str));
                 }
-            } catch (e) {}
+            } catch (e) { }
             return str;
         }
 
@@ -243,14 +622,14 @@
             document.getElementById('dialog-title').innerText = 'Ricken Bebidas';
             document.getElementById('dialog-message').innerText = fixEncoding(msg);
             document.getElementById('dialog-inputs').innerHTML = '';
-            
+
             const btnCancel = document.getElementById('dialog-btn-cancel');
             const btnConfirm = document.getElementById('dialog-btn-confirm');
-            
+
             btnCancel.classList.add('hidden');
             btnConfirm.innerText = 'OK';
             modal.classList.remove('hidden');
-            
+
             btnConfirm.onclick = () => {
                 modal.classList.add('hidden');
                 if (onOk) onOk();
@@ -262,15 +641,15 @@
             document.getElementById('dialog-title').innerText = 'Confirmação';
             document.getElementById('dialog-message').innerText = fixEncoding(msg);
             document.getElementById('dialog-inputs').innerHTML = '';
-            
+
             const btnCancel = document.getElementById('dialog-btn-cancel');
             const btnConfirm = document.getElementById('dialog-btn-confirm');
-            
+
             btnCancel.classList.remove('hidden');
             btnCancel.innerText = 'Cancelar';
             btnConfirm.innerText = 'Confirmar';
             modal.classList.remove('hidden');
-            
+
             btnCancel.onclick = () => modal.classList.add('hidden');
             btnConfirm.onclick = () => {
                 modal.classList.add('hidden');
@@ -282,10 +661,10 @@
             const modal = document.getElementById('custom-dialog-modal');
             document.getElementById('dialog-title').innerText = fixEncoding(title);
             document.getElementById('dialog-message').innerText = '';
-            
+
             const inputsContainer = document.getElementById('dialog-inputs');
             inputsContainer.innerHTML = '';
-            
+
             fields.forEach(f => {
                 const wrapper = document.createElement('div');
                 wrapper.style.textAlign = 'left';
@@ -301,20 +680,20 @@
                 wrapper.appendChild(input);
                 inputsContainer.appendChild(wrapper);
             });
-            
+
             const btnCancel = document.getElementById('dialog-btn-cancel');
             const btnConfirm = document.getElementById('dialog-btn-confirm');
-            
+
             btnCancel.classList.remove('hidden');
             btnCancel.innerText = 'Cancelar';
             btnConfirm.innerText = 'Salvar';
             modal.classList.remove('hidden');
-            
+
             setTimeout(() => {
                 const firstInput = inputsContainer.querySelector('input');
                 if (firstInput) firstInput.focus();
             }, 100);
-            
+
             btnCancel.onclick = () => modal.classList.add('hidden');
             btnConfirm.onclick = () => {
                 let results = {};
@@ -351,14 +730,14 @@
         window.criarNovoUsuario = () => {
             const email = document.getElementById('config-user').value;
             const pass = document.getElementById('config-pass').value;
-            if(!email || pass.length < 6) return customAlert("Preencha um e-mail válido e senha com 6+ caracteres.");
+            if (!email || pass.length < 6) return customAlert("Preencha um e-mail válido e senha com 6+ caracteres.");
             createUserWithEmailAndPassword(auth, email, pass).then(() => {
                 customAlert("Usuário criado com sucesso!");
                 document.getElementById('config-user').value = '';
                 document.getElementById('config-pass').value = '';
             }).catch(e => customAlert("Erro ao criar usuário: " + e.message));
         };
-        
+
         window.mudarAba = (abaId) => {
             document.querySelectorAll('.aba').forEach(aba => aba.classList.add('hidden'));
             document.getElementById(`aba-${abaId}`).classList.remove('hidden');
@@ -382,12 +761,22 @@
         window.toggleItensGerais = (elementId, btnId) => {
             const lista = document.getElementById(elementId);
             const btn = document.getElementById(btnId);
-            if (lista.classList.contains('hidden')) {
+            if (!lista || !btn) return;
+
+            const isHidden = lista.classList.contains('hidden');
+
+            if (isHidden) {
                 lista.classList.remove('hidden');
                 btn.innerText = btn.innerText.replace('🔽 Ver', '🔼 Ocultar');
+                if (elementId.startsWith('itens-com-')) {
+                    comandasAbertas.add(elementId.replace('itens-com-', ''));
+                }
             } else {
                 lista.classList.add('hidden');
                 btn.innerText = btn.innerText.replace('🔼 Ocultar', '🔽 Ver');
+                if (elementId.startsWith('itens-com-')) {
+                    comandasAbertas.delete(elementId.replace('itens-com-', ''));
+                }
             }
         };
 
@@ -403,43 +792,49 @@
             grid.innerHTML = '';
             comandas.forEach(c => {
                 const qtdItens = c.itens.reduce((acc, i) => acc + (i.quantidade || 1), 0);
+
+                // Verifica se a comanda estava aberta antes da atualização
+                const estaAberto = comandasAbertas.has(c.id);
+                const classeHidden = estaAberto ? '' : 'hidden';
+                const textoBotao = estaAberto ? '🔼 Ocultar' : '🔽 Ver';
+
                 let itensHTML = c.itens.map((i, idx) => {
                     const qtd = i.quantidade || 1;
                     return `
-                        <div class="item-row">
-                            <div class="item-info"><span class="item-qtd">${qtd}x</span> <span title="${fixEncoding(i.nome)}">${fixEncoding(i.nome)}</span></div>
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <span style="font-size:0.8rem; color:var(--text-muted);">R$ ${(i.valor * qtd).toFixed(2)}</span>
-                                <div class="item-actions">
-                                    <button class="btn-mini btn-qty" onclick="alterarQtd('${c.id}', ${idx}, -1)">-</button>
-                                    <button class="btn-mini btn-qty" onclick="alterarQtd('${c.id}', ${idx}, 1)">+</button>
-                                    <button class="btn-mini btn-del" onclick="removerItemComanda('${c.id}', ${idx})">🗑️</button>
-                                </div>
-                            </div>
-                        </div>`;
+                <div class="item-row">
+                    <div class="item-info"><span class="item-qtd">${qtd}x</span> <span title="${fixEncoding(i.nome)}">${fixEncoding(i.nome)}</span></div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span style="font-size:0.8rem; color:var(--text-muted);">R$ ${(i.valor * qtd).toFixed(2)}</span>
+                        <div class="item-actions">
+                            <button class="btn-mini btn-qty" onclick="alterarQtd('${c.id}', ${idx}, -1)">-</button>
+                            <button class="btn-mini btn-qty" onclick="alterarQtd('${c.id}', ${idx}, 1)">+</button>
+                            <button class="btn-mini btn-del" onclick="removerItemComanda('${c.id}', ${idx})">🗑️</button>
+                        </div>
+                    </div>
+                </div>`;
                 }).join('');
-                
+
                 grid.innerHTML += `
-                    <div class="comanda-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 style="margin:0; color: var(--primary); font-size: 1.2rem;">${fixEncoding(c.cliente)}</h3>
-                            <button class="btn-mini btn-edit" onclick="editarNomeCliente('${c.id}')">✏️ Edit</button>
-                        </div>
-                        <h3 style="margin: 0.8rem 0 0.2rem 0; font-size: 1.3rem;">R$ ${c.total.toFixed(2)}</h3>
-                        
-                        <button id="btn-toggle-com-${c.id}" class="btn-toggle-itens" onclick="toggleItensGerais('itens-com-${c.id}', 'btn-toggle-com-${c.id}')">
-                            🔽 Ver Itens (${qtdItens})
-                        </button>
-                        <div id="itens-com-${c.id}" class="item-list hidden">
-                            ${itensHTML || '<em style="color:var(--text-muted); font-size: 0.8rem;">Vazio...</em>'}
-                        </div>
-                        
-                        <div style="display:flex; gap:0.5rem; margin-top: auto; flex-wrap: wrap;">
-                            <button onclick="abrirModalProdutos('${c.id}')" style="flex:1; padding: 0.6rem;">+ Adicionar</button>
-                            <button onclick="abaterPagamentoComanda('${c.id}')" style="background:var(--info); color:white; flex:1; padding: 0.6rem;">💰 Abater</button>
-                            <button onclick="finalizarComanda('${c.id}')" style="background:var(--success); color:white; flex:1; padding: 0.6rem;">✔ Fechar</button>
-                        </div>
-                    </div>`;
+            <div class="comanda-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="margin:0; color: var(--primary); font-size: 1.2rem;">${fixEncoding(c.cliente)}</h3>
+                    <button class="btn-mini btn-edit" onclick="editarNomeCliente('${c.id}')">✏️ Edit</button>
+                </div>
+                <h3 style="margin: 0.8rem 0 0.2rem 0; font-size: 1.3rem;">R$ ${c.total.toFixed(2)}</h3>
+                
+                <button id="btn-toggle-com-${c.id}" class="btn-toggle-itens" onclick="toggleItensGerais('itens-com-${c.id}', 'btn-toggle-com-${c.id}')">
+                    ${textoBotao} Itens (${qtdItens})
+                </button>
+                <div id="itens-com-${c.id}" class="item-list ${classeHidden}">
+                    ${itensHTML || '<em style="color:var(--text-muted); font-size: 0.8rem;">Vazio...</em>'}
+                </div>
+                
+                <div style="display:flex; gap:0.5rem; margin-top: auto; flex-wrap: wrap;">
+                    <button onclick="abrirModalProdutos('${c.id}')" style="flex:1; padding: 0.6rem;">+ Adicionar</button>
+                    <button onclick="abaterPagamentoComanda('${c.id}')" style="background:var(--info); color:white; flex:1; padding: 0.6rem;">💰 Abater</button>
+                    <button onclick="finalizarComanda('${c.id}')" style="background:var(--success); color:white; flex:1; padding: 0.6rem;">✔ Fechar</button>
+                </div>
+            </div>`;
             });
         }
 
@@ -505,10 +900,10 @@
                 const horaStr = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 const dataFinalizacaoCompleta = `${dataStr} às ${horaStr}`;
 
-                await addDoc(collection(db, "historico"), { 
-                    ...comanda, 
+                await addDoc(collection(db, "historico"), {
+                    ...comanda,
                     dataFinalizacao: dataFinalizacaoCompleta,
-                    dataTimestamp: Date.now() 
+                    dataTimestamp: Date.now()
                 });
                 await deleteDoc(doc(db, "comandas", id));
             });
@@ -525,47 +920,45 @@
                 const catNomeFix = fixEncoding(cat.nomeCat);
                 const itensFiltrados = cat.itens.map((i, indexItem) => ({ ...i, originalIndex: indexItem }))
                     .filter(i => termo === '' || fixEncoding(i.nome).toLowerCase().includes(termo) || catNomeFix.toLowerCase().includes(termo));
-                
+
                 itensFiltrados.sort((a, b) => fixEncoding(a.nome).localeCompare(fixEncoding(b.nome), 'pt-BR'));
 
                 if (termo !== '' && itensFiltrados.length === 0 && !catNomeFix.toLowerCase().includes(termo)) return;
 
-                const isExpanded = termo !== '' ? '' : 'hidden';
-                const btnText = termo !== '' ? '🔼 Ocultar Produtos' : '🔽 Ver Produtos';
-
-                let itensCatHTML = itensFiltrados.map(i => `
-                    <div class="item-row">
-                        <span>${fixEncoding(i.nome)} - <strong style="color:var(--primary);">R$ ${i.valor.toFixed(2)}</strong></span>
-                        <div class="item-actions">
-                            <button class="btn-mini btn-edit" onclick="editarProdutoEstoque(${indexCat}, ${i.originalIndex})">✏️</button>
-                            <button class="btn-mini btn-del" onclick="excluirProdutoEstoque(${indexCat}, ${i.originalIndex})">🗑️</button>
-                        </div>
-                    </div>`).join('');
+                let itensHTML = itensFiltrados.map(i => `
+            <div class="item-row">
+                <div class="item-info">
+                    <span title="${fixEncoding(i.nome)}">${fixEncoding(i.nome)}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span style="font-size:0.85rem; color:var(--text-muted); font-weight:bold;">R$ ${parseFloat(i.valor).toFixed(2)}</span>
+                    <div class="item-actions">
+                        <button class="btn-mini btn-edit" onclick="editarProduto(${indexCat}, ${i.originalIndex})">✏️</button>
+                        <button class="btn-mini btn-del" onclick="removerProduto(${indexCat}, ${i.originalIndex})">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
 
                 adminLista.innerHTML += `
-                    <div class="category-box">
-                        <div class="category-title">
-                            <span>${catNomeFix}</span>
-                            <div style="display:flex; gap:4px;">
-                                <button class="btn-mini btn-edit" onclick="editarCategoria(${indexCat})">✏️ Renomear</button>
-                                <button class="btn-mini btn-del" onclick="excluirCategoria(${indexCat})">🗑️ Excluir</button>
-                            </div>
-                        </div>
-                        <button id="btn-toggle-est-${indexCat}" class="btn-toggle-itens" onclick="toggleItensGerais('itens-est-${indexCat}', 'btn-toggle-est-${indexCat}')" style="margin-bottom:0.8rem; border-color:var(--border);">
-                            ${btnText} (${cat.itens.length})
-                        </button>
-                        <div id="itens-est-${indexCat}" class="${isExpanded}">
-                            ${itensCatHTML || '<p style="color:var(--text-muted); font-size:0.9rem;">Vazio.</p>'}
-                        </div>
-                        <button onclick="novoProdutoNaCategoria(${indexCat})" style="margin-top: 1rem; width: auto; font-size: 0.9rem; background:transparent; color:var(--text); border:1px solid var(--border);">
-                            + Adicionar Produto Aqui
-                        </button>
-                    </div>`;
+            <div class="category-box">
+                <div class="category-title">
+                    <span>${catNomeFix}</span>
+                    <div style="display:flex; gap:0.4rem;">
+                        <button class="btn-mini btn-edit" onclick="editarCategoria(${indexCat})">✏️ Editar</button>
+                        <button class="btn-mini btn-del" onclick="removerCategoria(${indexCat})">🗑️ Excluir</button>
+                        <button class="btn-mini" style="background:var(--primary); color:#000;" onclick="novoProduto(${indexCat})">+ Produto</button>
+                    </div>
+                </div>
+                <div class="item-list">
+                    ${itensHTML || '<em style="color:var(--text-muted); font-size: 0.8rem;">Nenhum produto nesta categoria.</em>'}
+                </div>
+            </div>`;
             });
         }
-        
+
         async function salvarCatalogoNoFirebase() { await setDoc(doc(db, "sistema", "catalogo"), { categorias: catalogo }); }
-        
+
         window.ordenarEstoqueAZ = async () => {
             catalogo.sort((a, b) => fixEncoding(a.nomeCat).localeCompare(fixEncoding(b.nomeCat), 'pt-BR'));
             catalogo.forEach(cat => {
@@ -645,9 +1038,9 @@
             lista.innerHTML = '';
             const termo = filtro.toLowerCase().trim();
 
-            const histFiltrado = historico.filter(h => 
-                termo === '' || 
-                fixEncoding(h.cliente).toLowerCase().includes(termo) || 
+            const histFiltrado = historico.filter(h =>
+                termo === '' ||
+                fixEncoding(h.cliente).toLowerCase().includes(termo) ||
                 (h.dataFinalizacao && h.dataFinalizacao.toLowerCase().includes(termo))
             );
 
@@ -658,9 +1051,9 @@
 
             histFiltrado.forEach(h => {
                 const qtdItens = h.itens ? h.itens.reduce((acc, i) => acc + (i.quantidade || 1), 0) : 0;
-                const isExpanded = termo !== '' ? '' : 'hidden'; 
+                const isExpanded = termo !== '' ? '' : 'hidden';
                 const btnText = termo !== '' ? `🔼 Ocultar Itens (${qtdItens})` : `🔽 Ver Itens (${qtdItens})`;
-                
+
                 let itensHTML = h.itens ? h.itens.map(i => `
                     <div class="item-row">
                         <div class="item-info"><span class="item-qtd">${i.quantidade || 1}x</span> ${fixEncoding(i.nome)}</div>
@@ -689,11 +1082,11 @@
         window.importarExcel = () => {
             const fileInput = document.getElementById('file-excel');
             if (!fileInput.files.length) return customAlert("Selecione um arquivo Excel (.xlsx ou .csv) primeiro!");
-            
+
             const file = fileInput.files[0];
             const isCsv = file.name.toLowerCase().endsWith('.csv');
             const reader = new FileReader();
-            
+
             reader.onload = async (e) => {
                 try {
                     let workbook;
@@ -704,7 +1097,7 @@
                         const data = new Uint8Array(e.target.result);
                         workbook = XLSX.read(data, { type: 'array', codepage: 65001 });
                     }
-                    
+
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
                     const json = XLSX.utils.sheet_to_json(worksheet);
@@ -756,7 +1149,7 @@
                     customAlert("Erro ao processar a planilha. Verifique se o arquivo está correto.");
                 }
             };
-            
+
             if (isCsv) {
                 reader.readAsText(file, "UTF-8");
             } else {
@@ -787,7 +1180,7 @@
             const cat = catalogo[indexCat];
             document.getElementById('titulo-categoria-modal').innerText = fixEncoding(cat.nomeCat);
             const lista = document.getElementById('modal-lista-produtos'); lista.innerHTML = '';
-            
+
             const itensOrdenados = [...cat.itens].sort((a, b) => fixEncoding(a.nome).localeCompare(fixEncoding(b.nome), 'pt-BR'));
 
             itensOrdenados.forEach(item => {
@@ -816,7 +1209,7 @@
                         </button>`;
                 }
             }));
-            if(!achou) lista.innerHTML = `<p style="color:var(--text-muted); width:100%; text-align:center;">Nada encontrado.</p>`;
+            if (!achou) lista.innerHTML = `<p style="color:var(--text-muted); width:100%; text-align:center;">Nada encontrado.</p>`;
         };
 
         window.adicionarItemRapido = async (nome, valor) => {
@@ -847,4 +1240,5 @@
         };
     </script>
 </body>
+
 </html>
